@@ -972,7 +972,7 @@ class SummaryPage(QWidget):
         
         # 准备消息
         messages = [
-            {"role": "system", "content": "你是一个专业的聊天记录总结助手，擅长提取关键信息并进行简洁总结。"},
+            {"role": "system", "content": "你是一个专业的聊天记录总结助手，擅长提取关键信息并进行简洁总结。使用纯文本格式，不要使用markdown格式。"},
             {"role": "user", "content": f"{prompt}\n\n{chat_content}"}
         ]
         

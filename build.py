@@ -15,7 +15,7 @@ def build_app():
     
     # 定义打包参数
     args = [
-        '--name=DeepSeek聊天总结工具',
+        '--name=DeepSeek微信聊天记录总结神器',
         '--onefile',
         '--windowed',
         '--clean',

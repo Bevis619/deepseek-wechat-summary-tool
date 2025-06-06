@@ -1,4 +1,4 @@
-# DeepSeek 聊天总结工具
+# DeepSeek微信聊天记录总结神器
 
 一个基于 DeepSeek API 的微信聊天记录总结工具，支持从 chatlog 服务获取聊天记录并进行智能总结。
 
