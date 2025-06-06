@@ -263,26 +263,27 @@ class SummaryPage(QWidget):
             }
         """
         
-        # 设置文本框样式 - 增大总结结果字体
+        # 设置文本框样式 - 确保总结结果字体为22px
         textedit_style = """
             QTextEdit, QTextBrowser {
                 border: 1px solid #cccccc;
                 border-radius: 4px;
                 padding: 4px;
                 background-color: #ffffff;
-                font-size: 15px;
+                font-size: 22px;
                 font-family: "微软雅黑", "Segoe UI", Arial, sans-serif;
+                line-height: 1.4;
             }
         """
         
-        # 设置搜索输入框样式 - 增大提示文字字体
+        # 设置搜索输入框样式 - 调整字体大小
         search_input_style = """
             QLineEdit {
                 border: 2px solid #e0e0e0;
                 border-radius: 6px;
                 padding: 8px 12px;
                 background-color: #ffffff;
-                font-size: 14px;
+                font-size: 22px;
                 color: #333333;
             }
             QLineEdit:focus {
@@ -291,18 +292,18 @@ class SummaryPage(QWidget):
             }
             QLineEdit::placeholder {
                 color: #666666;
-                font-size: 14px;
+                font-size: 22px;
             }
         """
         
-        # 设置组合框样式 - 增大字体
+        # 设置组合框样式 - 调整字体大小
         combobox_style = """
             QComboBox {
                 border: 2px solid #e0e0e0;
                 border-radius: 6px;
                 padding: 8px 12px;
                 background-color: #ffffff;
-                font-size: 15px;
+                font-size: 22px;
                 color: #333333;
                 min-height: 20px;
             }
@@ -375,7 +376,7 @@ class SummaryPage(QWidget):
         date_label = QLabel("选择日期:")
         self.date_edit = QDateEdit()
         self.date_edit.setCalendarPopup(True)
-        self.date_edit.setDate(QDate.currentDate())
+        self.date_edit.setDate(QDate.currentDate().addDays(-1))
         # 添加日期变化信号连接
         self.date_edit.dateChanged.connect(self.on_date_changed)
         date_layout.addWidget(date_label)
@@ -423,10 +424,11 @@ class SummaryPage(QWidget):
         prompt_label = QLabel("总结提示词:")
         self.prompt_combo = QComboBox()
         self.prompt_combo.addItems([
-            "请帮我将群聊内容总结成一个群聊报告，包含不多于5个的话题的总结（如果还有更多话题，可以在后面简单补充）。每个话题包含以下内容：\n- 话题名(50字以内，带序号1️⃣2️⃣3️⃣，同时附带热度，以🔥数量表示）\n- 参与者(不超过5个人，将重复的人名去重)\n- 时间段(从几点到几点)\n- 过程(50到200字左右）\n- 评价(50字以下)\n- 分割线： ------------\n\n另外有以下要求：\n1. 每个话题结束使用 ------------ 分割\n2. 使用中文冒号\n3. 无需大标题\n4. 开始给出本群讨论风格的整体评价，例如活跃、太水、太黄、太暴力、话题不集中、无聊诸如此类\n\n最后总结下最活跃的前五个发言者。",
+            "请帮我将群聊内容总结成一个群聊报告，包含不多于5个的话题的总结（如果还有更多话题，可以在后面简单补充）。每个话题包含以下内容：\n- 话题名(50字以内，带序号1、2、3，同时附带热度，以🔥数量表示）\n- 参与者(不超过5个人，将重复的人名去重)\n- 时间段(从几点到几点)\n- 过程(50到200字左右）\n- 评价(50字以下)\n- 分割线： ------------\n\n另外有以下要求：\n1. 每个话题结束使用 ------------ 分割\n2. 使用中文冒号\n3. 无需大标题\n4. 开始给出本群讨论风格的整体评价，例如活跃、太水、太黄、太暴力、话题不集中、无聊诸如此类\n\n最后总结下最活跃的前五个发言者。",
             "请总结以下微信聊天记录的主要内容",
             "请提取以下微信聊天记录中的关键信息",
-            "请分析以下微信聊天记录并提取重要事项",
+            "请分析以下微信聊天记录并提取重要事项"
+
         ])
         self.prompt_combo.setEditable(True)
         
@@ -816,7 +818,7 @@ class SummaryPage(QWidget):
         
         # 添加基础CSS样式
         html = '''
-        <div style="font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #333;">
+        <div style="font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif; font-size: 22px; line-height: 1.6; color: #333;">
         ''' + '\n\n'.join(processed_paragraphs) + '''
         </div>
         '''
