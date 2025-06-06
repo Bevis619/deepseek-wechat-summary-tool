@@ -220,7 +220,7 @@ class SummaryPage(QWidget):
     def setup_style(self):
         """设置UI样式"""
         # 设置字体
-        font = QFont("微软雅黑", 9)
+        font = QFont("微软雅黑", 12)
         self.setFont(font)
         
         # 设置按钮样式
@@ -270,7 +270,7 @@ class SummaryPage(QWidget):
                 border-radius: 4px;
                 padding: 4px;
                 background-color: #ffffff;
-                font-size: 22px;
+                font-size: 26px;
                 font-family: "微软雅黑", "Segoe UI", Arial, sans-serif;
                 line-height: 1.4;
             }
@@ -333,7 +333,7 @@ class SummaryPage(QWidget):
                 background-color: #ffffff;
                 selection-background-color: #e6f0ff;
                 padding: 4px;
-                font-size: 15px;
+                font-size: 22px;
                 color: #333333;
             }
             QComboBox QAbstractItemView::item {
@@ -356,7 +356,6 @@ class SummaryPage(QWidget):
         self.summary_display.setStyleSheet(textedit_style)
         self.contact_search_input.setStyleSheet(search_input_style)  # 应用搜索输入框样式
         self.prompt_combo.setStyleSheet(combobox_style)
-        self.markdown_checkbox.setStyleSheet(combobox_style)
     
     def init_ui(self):
         # 创建主布局
@@ -424,7 +423,7 @@ class SummaryPage(QWidget):
         prompt_label = QLabel("总结提示词:")
         self.prompt_combo = QComboBox()
         self.prompt_combo.addItems([
-            "请帮我将群聊内容总结成一个群聊报告，包含不多于5个的话题的总结（如果还有更多话题，可以在后面简单补充）。每个话题包含以下内容：\n- 话题名(50字以内，带序号1、2、3，同时附带热度，以🔥数量表示）\n- 参与者(不超过5个人，将重复的人名去重)\n- 时间段(从几点到几点)\n- 过程(50到200字左右）\n- 评价(50字以下)\n- 分割线： ------------\n\n另外有以下要求：\n1. 每个话题结束使用 ------------ 分割\n2. 使用中文冒号\n3. 无需大标题\n4. 开始给出本群讨论风格的整体评价，例如活跃、太水、太黄、太暴力、话题不集中、无聊诸如此类\n\n最后总结下最活跃的前五个发言者。",
+            "请帮我将群聊内容总结成一个群聊报告，包含不多于5个的话题的总结（如果还有更多话题，可以在后面简单补充）。每个话题包含以下内容：\n- 话题名(50字以内，带数字序号，同时附带热度，以🔥数量表示）\n- 参与者(不超过5个人，将重复的人名去重)\n- 时间段(从几点到几点)\n- 过程(50到200字左右）\n- 评价(50字以下)\n- 分割线： ------------\n\n另外有以下要求：\n1. 每个话题结束使用 ------------ 分割\n2. 使用中文冒号\n3. 无需大标题\n4. 开始给出本群讨论风格的整体评价，例如活跃、太水、太黄、太暴力、话题不集中、无聊诸如此类\n\n最后总结下最活跃的前五个发言者。",
             "请总结以下微信聊天记录的主要内容",
             "请提取以下微信聊天记录中的关键信息",
             "请分析以下微信聊天记录并提取重要事项"
@@ -440,16 +439,7 @@ class SummaryPage(QWidget):
         prompt_combo_layout.addWidget(self.prompt_combo)
         prompt_combo_layout.addWidget(self.add_prompt_button)
         
-        # Markdown显示选项
-        markdown_layout = QHBoxLayout()
-        self.markdown_checkbox = QComboBox()
-        self.markdown_checkbox.addItems(["纯文本显示", "Markdown格式显示"])
-        markdown_layout.addWidget(QLabel("显示格式:"))
-        markdown_layout.addWidget(self.markdown_checkbox)
-        markdown_layout.addStretch()
-        
         prompt_layout.addLayout(prompt_combo_layout)
-        prompt_layout.addLayout(markdown_layout)
         
         # 总结按钮
         self.summary_button = QPushButton("一键总结")
@@ -691,153 +681,22 @@ class SummaryPage(QWidget):
     
     def update_summary(self, text):
         """更新总结内容（打字机效果）"""
-        # 检查是否使用Markdown格式
-        is_markdown = self.markdown_checkbox.currentIndex() == 1
-        
-        if is_markdown:
-            # 累积文本
-            if hasattr(self, '_markdown_buffer'):
-                self._markdown_buffer += text
-            else:
-                self._markdown_buffer = text
-            
-            # 转换为HTML并显示
-            html_text = self.improved_markdown_to_html(self._markdown_buffer)
-            self.summary_display.setHtml(html_text)
-        else:
-            # 纯文本模式
-            current_text = self.summary_display.toPlainText()
-            self.summary_display.setPlainText(current_text + text)
+        # 纯文本模式
+        current_text = self.summary_display.toPlainText()
+        self.summary_display.setPlainText(current_text + text)
         
         # 滚动到底部
         self.summary_display.verticalScrollBar().setValue(
             self.summary_display.verticalScrollBar().maximum()
         )
     
-    def improved_markdown_to_html(self, text):
-        """改进的Markdown到HTML转换器"""
-        import re
-        
-        # 预处理：处理HTML特殊字符转义
-        text = text.replace('&', '&amp;')
-        text = text.replace('<', '&lt;')
-        text = text.replace('>', '&gt;')
-        
-        # 转换代码块（需要先处理，避免其中的标记被误处理）
-        text = re.sub(r'```(\w*)\n(.*?)\n```', r'<pre style="background:#f5f5f5;padding:10px;border-radius:4px;"><code>\2</code></pre>', text, flags=re.DOTALL)
-        text = re.sub(r'```(.*?)```', r'<pre style="background:#f5f5f5;padding:10px;border-radius:4px;"><code>\1</code></pre>', text, flags=re.DOTALL)
-        
-        # 转换行内代码
-        text = re.sub(r'`([^`]+)`', r'<code style="background:#f0f0f0;padding:2px 4px;border-radius:3px;">\1</code>', text)
-        
-        # 转换标题
-        text = re.sub(r'^# (.+)$', r'<h1 style="color:#333;margin:20px 0 10px 0;">\1</h1>', text, flags=re.MULTILINE)
-        text = re.sub(r'^## (.+)$', r'<h2 style="color:#333;margin:18px 0 8px 0;">\1</h2>', text, flags=re.MULTILINE)
-        text = re.sub(r'^### (.+)$', r'<h3 style="color:#333;margin:16px 0 6px 0;">\1</h3>', text, flags=re.MULTILINE)
-        text = re.sub(r'^#### (.+)$', r'<h4 style="color:#333;margin:14px 0 4px 0;">\1</h4>', text, flags=re.MULTILINE)
-        text = re.sub(r'^##### (.+)$', r'<h5 style="color:#333;margin:12px 0 4px 0;">\1</h5>', text, flags=re.MULTILINE)
-        text = re.sub(r'^###### (.+)$', r'<h6 style="color:#333;margin:10px 0 4px 0;">\1</h6>', text, flags=re.MULTILINE)
-        
-        # 转换粗体和斜体
-        text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
-        text = re.sub(r'__(.+?)__', r'<strong>\1</strong>', text)
-        text = re.sub(r'(?<!\*)\*([^*]+)\*(?!\*)', r'<em>\1</em>', text)
-        text = re.sub(r'(?<!_)_([^_]+)_(?!_)', r'<em>\1</em>', text)
-        
-        # 转换链接
-        text = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href="\2" style="color:#4a86e8;text-decoration:none;">\1</a>', text)
-        
-        # 转换分隔线
-        text = re.sub(r'^-{3,}$', r'<hr style="border:none;border-top:1px solid #ddd;margin:20px 0;">', text, flags=re.MULTILINE)
-        text = re.sub(r'^\*{3,}$', r'<hr style="border:none;border-top:1px solid #ddd;margin:20px 0;">', text, flags=re.MULTILINE)
-        text = re.sub(r'^_{3,}$', r'<hr style="border:none;border-top:1px solid #ddd;margin:20px 0;">', text, flags=re.MULTILINE)
-        
-        # 转换列表
-        lines = text.split('\n')
-        in_ul = False
-        in_ol = False
-        result_lines = []
-        
-        for line in lines:
-            stripped = line.strip()
-            
-            # 无序列表
-            if re.match(r'^[-*+]\s+', stripped):
-                if not in_ul:
-                    if in_ol:
-                        result_lines.append('</ol>')
-                        in_ol = False
-                    result_lines.append('<ul style="margin:10px 0;padding-left:30px;">')
-                    in_ul = True
-                content = re.sub(r'^[-*+]\s+', '', stripped)
-                result_lines.append(f'<li style="margin:4px 0;">{content}</li>')
-            # 有序列表
-            elif re.match(r'^\d+\.\s+', stripped):
-                if not in_ol:
-                    if in_ul:
-                        result_lines.append('</ul>')
-                        in_ul = False
-                    result_lines.append('<ol style="margin:10px 0;padding-left:30px;">')
-                    in_ol = True
-                content = re.sub(r'^\d+\.\s+', '', stripped)
-                result_lines.append(f'<li style="margin:4px 0;">{content}</li>')
-            else:
-                # 结束列表
-                if in_ul:
-                    result_lines.append('</ul>')
-                    in_ul = False
-                if in_ol:
-                    result_lines.append('</ol>')
-                    in_ol = False
-                
-                # 普通行
-                if stripped:
-                    result_lines.append(line)
-                else:
-                    result_lines.append('')
-        
-        # 关闭未关闭的列表
-        if in_ul:
-            result_lines.append('</ul>')
-        if in_ol:
-            result_lines.append('</ol>')
-        
-        text = '\n'.join(result_lines)
-        
-        # 转换段落
-        paragraphs = re.split(r'\n\s*\n', text)
-        processed_paragraphs = []
-        
-        for para in paragraphs:
-            para = para.strip()
-            if para:
-                # 如果不是HTML标签开头，包装为段落
-                if not re.match(r'^\s*<(h[1-6]|ul|ol|hr|pre|blockquote)', para):
-                    para = f'<p style="margin:10px 0;line-height:1.6;">{para}</p>'
-                processed_paragraphs.append(para)
-        
-        # 添加基础CSS样式
-        html = '''
-        <div style="font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif; font-size: 22px; line-height: 1.6; color: #333;">
-        ''' + '\n\n'.join(processed_paragraphs) + '''
-        </div>
-        '''
-        
-        return html
-    
     def on_summary_finished(self):
         """总结完成时的处理"""
         self.summary_button.setEnabled(True)
         self.summary_button.setText("一键总结")
-        # 清除markdown缓冲区
-        if hasattr(self, '_markdown_buffer'):
-            delattr(self, '_markdown_buffer')
     
     def on_summary_error(self, error_msg):
         """处理总结过程中的错误"""
         QMessageBox.critical(self, "总结错误", error_msg)
         self.summary_button.setEnabled(True)
         self.summary_button.setText("一键总结")
-        # 清除markdown缓冲区
-        if hasattr(self, '_markdown_buffer'):
-            delattr(self, '_markdown_buffer')
