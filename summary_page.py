@@ -263,17 +263,19 @@ class SummaryPage(QWidget):
             }
         """
         
-        # 设置文本框样式
+        # 设置文本框样式 - 增大总结结果字体
         textedit_style = """
             QTextEdit, QTextBrowser {
                 border: 1px solid #cccccc;
                 border-radius: 4px;
                 padding: 4px;
                 background-color: #ffffff;
+                font-size: 15px;
+                font-family: "微软雅黑", "Segoe UI", Arial, sans-serif;
             }
         """
         
-        # 设置搜索输入框样式 - 修复提示文字颜色
+        # 设置搜索输入框样式 - 增大提示文字字体
         search_input_style = """
             QLineEdit {
                 border: 2px solid #e0e0e0;
@@ -289,18 +291,18 @@ class SummaryPage(QWidget):
             }
             QLineEdit::placeholder {
                 color: #666666;
-                font-size: 13px;
+                font-size: 14px;
             }
         """
         
-        # 设置组合框样式 - 增大字体并调整颜色
+        # 设置组合框样式 - 增大字体
         combobox_style = """
             QComboBox {
                 border: 2px solid #e0e0e0;
                 border-radius: 6px;
                 padding: 8px 12px;
                 background-color: #ffffff;
-                font-size: 14px;
+                font-size: 15px;
                 color: #333333;
                 min-height: 20px;
             }
@@ -330,7 +332,7 @@ class SummaryPage(QWidget):
                 background-color: #ffffff;
                 selection-background-color: #e6f0ff;
                 padding: 4px;
-                font-size: 14px;
+                font-size: 15px;
                 color: #333333;
             }
             QComboBox QAbstractItemView::item {

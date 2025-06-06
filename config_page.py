@@ -1,10 +1,22 @@
 import os
 import json
+import sys
 from PyQt5.QtWidgets import (QWidget, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, 
                              QPushButton, QComboBox, QMessageBox, QGroupBox, QFormLayout,
                              QSpacerItem, QSizePolicy)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
+
+def get_config_path():
+    """获取配置文件路径，兼容开发环境和打包后的环境"""
+    if getattr(sys, 'frozen', False):
+        # 打包后的环境
+        application_path = os.path.dirname(sys.executable)
+    else:
+        # 开发环境
+        application_path = os.path.dirname(os.path.abspath(__file__))
+    
+    return os.path.join(application_path, "config.json")
 
 class ConfigPage(QWidget):
     def __init__(self):
@@ -159,13 +171,21 @@ class ConfigPage(QWidget):
     
     def load_config(self):
         """加载配置"""
-        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+        config_path = get_config_path()
+        print(f"正在加载配置文件: {config_path}")  # 调试信息
         if os.path.exists(config_path):
             try:
                 with open(config_path, "r", encoding="utf-8") as f:
                     config = json.load(f)
-                    self.api_key_input.setText(config.get("api_key", ""))
-                    self.api_url_input.setText(config.get("api_url", "https://api.deepseek.com/v1"))
+                    
+                    # 加载API密钥
+                    api_key = config.get("api_key", "")
+                    self.api_key_input.setText(api_key)
+                    print(f"加载API密钥: {'***已设置***' if api_key else '未设置'}")  # 调试信息
+                    
+                    # 加载API地址
+                    api_url = config.get("api_url", "https://api.deepseek.com/v1")
+                    self.api_url_input.setText(api_url)
                     
                     # 设置模型
                     model = config.get("model", "deepseek-chat")
@@ -176,29 +196,51 @@ class ConfigPage(QWidget):
                     # 设置chatlog服务地址
                     chatlog_service_url = config.get("chatlog_service_url", "http://127.0.0.1:5030/api/v1")
                     self.chatlog_service_url_input.setText(chatlog_service_url)
+                    
+                    print("配置加载成功")  # 调试信息
             except Exception as e:
                 print(f"加载配置失败: {str(e)}")
+                # 设置默认值
+                self.api_url_input.setText("https://api.deepseek.com/v1")
+                self.chatlog_service_url_input.setText("http://127.0.0.1:5030/api/v1")
         else:
+            print("配置文件不存在，使用默认设置")  # 调试信息
             # 默认设置
             self.api_url_input.setText("https://api.deepseek.com/v1")
             self.chatlog_service_url_input.setText("http://127.0.0.1:5030/api/v1")
     
     def save_config(self):
         """保存配置"""
+        # 确保所有字段都有值
+        api_key = self.api_key_input.text().strip()
+        api_url = self.api_url_input.text().strip() or "https://api.deepseek.com/v1"
+        model = self.model_combo.currentText() or "deepseek-chat"
+        chatlog_service_url = self.chatlog_service_url_input.text().strip() or "http://127.0.0.1:5030/api/v1"
+        
         config = {
-            "api_key": self.api_key_input.text(),
-            "api_url": self.api_url_input.text(),
-            "model": self.model_combo.currentText(),
-            "chatlog_service_url": self.chatlog_service_url_input.text()
+            "api_key": api_key,
+            "api_url": api_url,
+            "model": model,
+            "chatlog_service_url": chatlog_service_url
         }
         
-        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+        config_path = get_config_path()
+        print(f"正在保存配置到: {config_path}")  # 调试信息
+        print(f"保存的配置: API密钥={'***已设置***' if api_key else '未设置'}, API地址={api_url}, 模型={model}")  # 调试信息
+        
         try:
+            # 确保目录存在
+            os.makedirs(os.path.dirname(config_path), exist_ok=True)
+            
             with open(config_path, "w", encoding="utf-8") as f:
                 json.dump(config, f, ensure_ascii=False, indent=4)
+            
+            print("配置保存成功")  # 调试信息
             QMessageBox.information(self, "成功", "配置已保存")
         except Exception as e:
-            QMessageBox.critical(self, "保存失败", f"无法保存配置: {str(e)}")
+            error_msg = f"无法保存配置: {str(e)}"
+            print(f"保存配置失败: {error_msg}")  # 调试信息
+            QMessageBox.critical(self, "保存失败", error_msg)
     
     def get_config(self):
         """获取当前配置"""

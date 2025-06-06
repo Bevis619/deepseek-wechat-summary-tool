@@ -20,6 +20,7 @@ def build_app():
         '--windowed',
         '--clean',
         '--add-data=icon.svg;.',  # 添加图标文件
+        '--add-data=config.json;.',  # 添加配置文件
         'main.py'
     ]
     
