@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- 背景圆形 -->
+  <circle cx="64" cy="64" r="60" fill="#4a86e8" />
+  
+  <!-- 聊天气泡 -->
+  <path d="M40 40 H88 A8 8 0 0 1 96 48 V68 A8 8 0 0 1 88 76 H64 L52 88 V76 H40 A8 8 0 0 1 32 68 V48 A8 8 0 0 1 40 40 Z" fill="white" />
+  
+  <!-- 总结符号 -->
+  <rect x="44" y="50" width="40" height="4" rx="2" fill="#4a86e8" />
+  <rect x="44" y="58" width="40" height="4" rx="2" fill="#4a86e8" />
+  <rect x="44" y="66" width="24" height="4" rx="2" fill="#4a86e8" />
+  
+  <!-- DeepSeek标志 -->
+  <circle cx="96" cy="96" r="16" fill="white" />
+  <path d="M88 96 L94 102 L104 92" stroke="#4a86e8" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

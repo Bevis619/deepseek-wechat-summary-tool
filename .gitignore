@@ -1,0 +1,27 @@
+# Python缓存文件
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 虚拟环境
+venv/
+env/
+.env
+
+# 打包文件
+#dist/
+build/
+*.spec
+
+# 配置文件（包含敏感信息）
+config.json
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE文件
+.idea/
+.vscode/
+*.swp
+*.swo
